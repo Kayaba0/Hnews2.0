@@ -1,0 +1,38 @@
+Vorrei creare un sito dove sono segnalate le future uscite di serie animate, raggruppale per mese di uscita, aggiungendo diversi filtri di ricerca Una volta cliccato su un titolo in uscita si apre una nuova pagina con le informazioni riguardanti casa produttrice, data di uscita, e una galleria di immagine preview della serie 
+Crea un sito moderno e minimal, che siano gradevoli alla vista ma anche funzionali, usa design arrotondati, gradienti scuri con accenti arangioni e/o viola (ma sperimenta anche altri colori se li ritieni migliori)
+
+Aggiungi dei filtri e dai la possibilita di scegliere il mese e l'anno, cosí da vedere anche le uscite preceenti La preview della pagina della serie selezionata mettila affianco, inoltre lascia un'immagine piú grande in alto dell'anime selezionato
+
+aggiungere ricerca testuale
+🔹 aggiungere modal per immagini galleria
+🔹 integrare dark/light toggle
+🔹 usare Google Sheets come database (super comodo)
+🔹 aggiungere infinite scroll o paginazione
+
+✅ versione con responsive mobile perfetta
+✅ animazioni morbide
+✅ hover effects moderni
+
+Potresti mettere un toggle in alto a destra vicino al chiaro scuro per tradurre l'intero sito in inglese o in italiano
+
+Inoltre metti un'icona di login che permetta all'admin (credenziali admin:admin) di modificare le schede esistenti e do aggiungere nuovi titoli nuove schede di anime in arrivo 
+
+I menu a tendina rendili piú arrotondati e con un effetto glass di design piacevole da vedere
+
+
+Nella home metti tutti i risultati di tutti gli anni 
+
+I menu a tendina rendili arrotondati con lo stesso stile dell'intero sito
+Aggiungi una voce Titti/All che ripristina il filtro facendo vedere tutti i risultati, per ogni filtro
+Nello spazio dei filtri aggiungi una piccola freccia verso il basso a destra per indicare che quello é un menu a tendina (sempre all'interno del box del filtro)
+
+Sostituisci tutte le immagini con immagine di animazione
+
+Nella scheda di creazione di una nuova serie, quando entro come admin, aggiungi la possibilità di digitae un nuovo valore, in quel caso andrá aggiunto ai filtri corrispondenti, oppure di scegliere fra quelli esistenti
+Inoltre le immagini rendile caricabili tramite drag and drop per facilitare il caricamento
+
+Non tutti i campi devono essere obbligatori 
+
+Aggiungi un piccolo logo affianco al nome del sito in alto, rendi sia il logo sia la scritta cliccabile e rimandano alla home del sito
+
+Quando clicco su uno studio di produzione, genere o anno di produzione, rimandami ad una ricerca che prevede il valore cliccato come filtro
