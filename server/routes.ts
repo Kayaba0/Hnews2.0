@@ -1,5 +1,5 @@
 import type { Express, Request, Response, NextFunction } from "express";
-import { storage } from "./storage";
+import { storage } from "./storage.js";
 import multer from "multer";
 import { 
   insertAnimeSchema, 
