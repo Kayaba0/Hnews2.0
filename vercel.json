@@ -1,23 +1,12 @@
 {
   "version": 2,
-
-  "routes": [
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "^/api/(.*)$",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "^(?!/api/).*$",
-      "dest": "/index.html"
-    }
-  ],
-
   "functions": {
     "api/[...path].ts": {
       "includeFiles": "build/server/**"
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
 }
