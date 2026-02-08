@@ -1,11 +1,11 @@
 {
+  "version": 2,
   "functions": {
     "api/[...path].ts": {
       "includeFiles": "build/server/**"
     }
   },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
