@@ -125,9 +125,15 @@ export default function Admin() {
 
   // Sync admin status from the server cookie (so "logged in" actually means server-authenticated)
   useEffect(() => {
+    // If the user explicitly logged out, don't auto-log them back in.
+    if (sessionStorage.getItem("hnews_admin_logged_out") === "1") return;
+
     (async () => {
       try {
-        const res = await fetch("/api/admin/me", { credentials: "include" });
+        const res = await fetch("/api/admin/me", {
+          credentials: "include",
+          cache: "no-store",
+        });
         const data = await res.json().catch(() => ({ isAdmin: false }));
         if (data?.isAdmin) {
           login();
@@ -139,7 +145,23 @@ export default function Admin() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/admin/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
+      // Prevent auto-login on next visit to /admin
+      sessionStorage.setItem("hnews_admin_logged_out", "1");
+      // Hard refresh to reset any client state
+      window.location.href = "/admin";
+      window.location.reload();
+    }
+  };
+
+const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       // optional: keep username field for UI, but only "admin" is valid
@@ -169,6 +191,7 @@ export default function Admin() {
         return;
       }
 
+      sessionStorage.removeItem("hnews_admin_logged_out");
       login();
       toast({ title: "Logged in" });
     } catch (err: any) {
@@ -182,11 +205,11 @@ export default function Admin() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-start justify-center p-4 pt-[14vh]">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md glass-panel p-10 rounded-[3rem] border border-white/10 shadow-2xl -translate-y-12"
+          className="w-full max-w-md glass-panel p-10 rounded-[3rem] border border-white/10 shadow-2xl"
         >
           <h1 className="text-3xl font-display font-bold text-center mb-8 text-gradient">
             Admin Login
@@ -273,6 +296,14 @@ export default function Admin() {
             >
               <Plus className="size-6 mr-2" />
               {language === "it" ? "Aggiungi" : "Add"}
+            </Button>
+
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="h-14 px-8 rounded-[1.5rem] border-white/10 hover:bg-white/5"
+            >
+              {language === "it" ? "Logout" : "Logout"}
             </Button>
           </div>
         </div>

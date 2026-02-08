@@ -6,6 +6,10 @@ import cookie from "cookie";
  * Clears cookie.
  */
 export default function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Vary", "Cookie");
+
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method Not Allowed" });
@@ -19,6 +23,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
       secure: process.env.NODE_ENV === "production",
       path: "/",
       expires: new Date(0),
+      maxAge: 0,
     })
   );
 

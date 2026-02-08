@@ -7,15 +7,14 @@ import cookie from "cookie";
  * Returns { isAdmin: boolean }
  */
 export default function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Vary", "Cookie");
+
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
     return res.status(405).json({ error: "Method Not Allowed" });
   }
-
-  // Disable caching (important on Vercel/CDN) and vary by Cookie
-  res.setHeader("Cache-Control", "no-store");
-  res.setHeader("Pragma", "no-cache");
-  res.setHeader("Vary", "Cookie");
 
   const secret = process.env.ADMIN_JWT_SECRET;
   if (!secret) return res.status(200).json({ isAdmin: false });
