@@ -234,6 +234,27 @@ function registerRoutes(app) {
     );
     return res.json({ ok: true });
   });
+  app.post("/admin/login", (req, res) => {
+    const pwd = (req.body?.password ?? "").toString();
+    const expected = process.env.ADMIN_PASSWORD;
+    if (!expected) return res.status(500).json({ error: "ADMIN_PASSWORD not set" });
+    if (pwd !== expected) return res.status(401).json({ error: "Invalid credentials" });
+    const secret = process.env.ADMIN_JWT_SECRET;
+    if (!secret) return res.status(500).json({ error: "ADMIN_JWT_SECRET not set" });
+    const token = jwt.sign({ role: "admin" }, secret, { expiresIn: "7d" });
+    res.setHeader(
+      "Set-Cookie",
+      cookie.serialize("hnews_admin", token, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7
+        // 7 days
+      })
+    );
+    return res.json({ ok: true });
+  });
   app.get("/api/admin/me", (req, res) => {
     const secret = process.env.ADMIN_JWT_SECRET;
     if (!secret) return res.json({ isAdmin: false });
@@ -247,7 +268,33 @@ function registerRoutes(app) {
       return res.json({ isAdmin: false });
     }
   });
+  app.get("/admin/me", (req, res) => {
+    const secret = process.env.ADMIN_JWT_SECRET;
+    if (!secret) return res.json({ isAdmin: false });
+    const cookies = cookie.parse(req.headers.cookie || "");
+    const token = cookies.hnews_admin;
+    if (!token) return res.json({ isAdmin: false });
+    try {
+      const payload = jwt.verify(token, secret);
+      return res.json({ isAdmin: payload?.role === "admin" });
+    } catch {
+      return res.json({ isAdmin: false });
+    }
+  });
   app.post("/api/admin/logout", (_req, res) => {
+    res.setHeader(
+      "Set-Cookie",
+      cookie.serialize("hnews_admin", "", {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        expires: /* @__PURE__ */ new Date(0)
+      })
+    );
+    return res.json({ ok: true });
+  });
+  app.post("/admin/logout", (_req, res) => {
     res.setHeader(
       "Set-Cookie",
       cookie.serialize("hnews_admin", "", {
