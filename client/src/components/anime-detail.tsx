@@ -19,7 +19,7 @@ interface AnimeDetailProps {
 export function AnimeDetail({ anime, onClose, onQuickFilter, onEdit }: AnimeDetailProps) {
   const { language, animes, upcomingEpisodes, isAdmin } = useStore();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(true);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   
   const animeData = anime as any;
   const isEpisode = animeData?.isEpisode;
