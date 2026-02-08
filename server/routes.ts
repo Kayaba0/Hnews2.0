@@ -8,6 +8,8 @@ import {
   insertStudioSchema 
 } from "@shared/schema";
 import { v2 as cloudinary } from "cloudinary";
+import jwt from "jsonwebtoken";
+import * as cookie from "cookie";
 
 // Config Cloudinary
 if (!process.env.CLOUDINARY_URL) {
@@ -15,21 +17,95 @@ if (!process.env.CLOUDINARY_URL) {
 }
 cloudinary.config({ secure: true });
 
-// ================= AUTH (simple Bearer token) =================
-// Protect write endpoints by requiring: Authorization: Bearer <ADMIN_TOKEN>
+// ================= AUTH (admin cookie/JWT + optional Bearer token) =================
+// We support two ways to authenticate write endpoints:
+// 1) Cookie JWT set by POST /api/admin/login (used by the Admin UI)
+// 2) Authorization: Bearer <ADMIN_TOKEN> (optional fallback for scripts)
 function requireAdmin(req: Request, res: Response, next: NextFunction) {
-  const header = req.headers.authorization || "";
-  const token = header.startsWith("Bearer ") ? header.slice(7) : null;
+  // Cookie JWT
+  const secret = process.env.ADMIN_JWT_SECRET;
+  const cookies = cookie.parse(req.headers.cookie || "");
+  const jwtToken = cookies.hnews_admin;
 
-  if (!process.env.ADMIN_TOKEN || token !== process.env.ADMIN_TOKEN) {
-    return res.status(401).json({ error: "Unauthorized" });
+  if (secret && jwtToken) {
+    try {
+      const payload = jwt.verify(jwtToken, secret) as any;
+      if (payload?.role === "admin") return next();
+    } catch {
+      // ignore and fall back to bearer token below
+    }
   }
-  return next();
+
+  // Bearer token fallback (optional)
+  const header = req.headers.authorization || "";
+  const bearer = header.startsWith("Bearer ") ? header.slice(7) : null;
+
+  if (process.env.ADMIN_TOKEN && bearer === process.env.ADMIN_TOKEN) {
+    return next();
+  }
+
+  return res.status(401).json({ error: "Unauthorized" });
 }
 
-
-
 export function registerRoutes(app: Express): void {
+
+  // ================= ADMIN AUTH =================
+  app.post("/api/admin/login", (req, res) => {
+    const pwd = (req.body?.password ?? "").toString();
+    const expected = process.env.ADMIN_PASSWORD;
+
+    if (!expected) return res.status(500).json({ error: "ADMIN_PASSWORD not set" });
+    if (pwd !== expected) return res.status(401).json({ error: "Invalid credentials" });
+
+    const secret = process.env.ADMIN_JWT_SECRET;
+    if (!secret) return res.status(500).json({ error: "ADMIN_JWT_SECRET not set" });
+
+    const token = jwt.sign({ role: "admin" }, secret, { expiresIn: "7d" });
+
+    res.setHeader(
+      "Set-Cookie",
+      cookie.serialize("hnews_admin", token, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+      })
+    );
+
+    return res.json({ ok: true });
+  });
+
+  app.get("/api/admin/me", (req, res) => {
+    const secret = process.env.ADMIN_JWT_SECRET;
+    if (!secret) return res.json({ isAdmin: false });
+
+    const cookies = cookie.parse(req.headers.cookie || "");
+    const token = cookies.hnews_admin;
+    if (!token) return res.json({ isAdmin: false });
+
+    try {
+      const payload = jwt.verify(token, secret) as any;
+      return res.json({ isAdmin: payload?.role === "admin" });
+    } catch {
+      return res.json({ isAdmin: false });
+    }
+  });
+
+  app.post("/api/admin/logout", (_req, res) => {
+    res.setHeader(
+      "Set-Cookie",
+      cookie.serialize("hnews_admin", "", {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        expires: new Date(0),
+      })
+    );
+    return res.json({ ok: true });
+  });
+
   // ================= ANIMES =================
   app.get("/api/animes", async (_req, res) => {
     try {
