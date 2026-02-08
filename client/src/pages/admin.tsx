@@ -186,7 +186,7 @@ export default function Admin() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md glass-panel p-10 rounded-[3rem] border border-white/10 shadow-2xl"
+          className="w-full max-w-md glass-panel p-10 rounded-[3rem] border border-white/10 shadow-2xl" + " -translate-y-12"
         >
           <h1 className="text-3xl font-display font-bold text-center mb-8 text-gradient">
             Admin Login

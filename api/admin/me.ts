@@ -7,6 +7,9 @@ import cookie from "cookie";
  * Returns { isAdmin: boolean }
  */
 export default function handler(req: VercelRequest, res: VercelResponse) {
+  // Avoid Vercel/edge caching for auth checks
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Vary", "Cookie");
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
     return res.status(405).json({ error: "Method Not Allowed" });
