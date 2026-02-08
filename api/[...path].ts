@@ -1,5 +1,4 @@
 import express from "express";
-// @ts-ignore - generated at install/build time by tsup
 import { registerRoutes } from "../build/server/routes.js";
 
 const app = express();
