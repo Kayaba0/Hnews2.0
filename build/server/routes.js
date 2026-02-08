@@ -188,80 +188,19 @@ var storage = new DatabaseStorage();
 // server/routes.ts
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
-import jwt from "jsonwebtoken";
-import cookie from "cookie";
 if (!process.env.CLOUDINARY_URL) {
   console.warn("Warning: CLOUDINARY_URL not set. Image uploads will not work.");
 }
 cloudinary.config({ secure: true });
 function requireAdmin(req, res, next) {
-  const secret = process.env.ADMIN_JWT_SECRET;
-  if (secret) {
-    try {
-      const cookies = cookie.parse(req.headers.cookie || "");
-      const jwtToken = cookies.hnews_admin;
-      if (jwtToken) {
-        jwt.verify(jwtToken, secret);
-        return next();
-      }
-    } catch {
-    }
-  }
   const header = req.headers.authorization || "";
-  const bearer = header.startsWith("Bearer ") ? header.slice(7) : null;
-  if (process.env.ADMIN_TOKEN && bearer === process.env.ADMIN_TOKEN) {
-    return next();
+  const token = header.startsWith("Bearer ") ? header.slice(7) : null;
+  if (!process.env.ADMIN_TOKEN || token !== process.env.ADMIN_TOKEN) {
+    return res.status(401).json({ error: "Unauthorized" });
   }
-  return res.status(401).json({ error: "Unauthorized" });
+  return next();
 }
 function registerRoutes(app) {
-  app.post("/api/admin/login", (req, res) => {
-    const pwd = (req.body?.password ?? "").toString();
-    const expected = process.env.ADMIN_PASSWORD;
-    if (!expected) return res.status(500).json({ error: "ADMIN_PASSWORD not set" });
-    if (pwd !== expected) return res.status(401).json({ error: "Invalid credentials" });
-    const secret = process.env.ADMIN_JWT_SECRET;
-    if (!secret) return res.status(500).json({ error: "ADMIN_JWT_SECRET not set" });
-    const token = jwt.sign({ role: "admin" }, secret, { expiresIn: "7d" });
-    res.setHeader(
-      "Set-Cookie",
-      cookie.serialize("hnews_admin", token, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 7
-        // 7 days
-      })
-    );
-    return res.json({ ok: true });
-  });
-  app.get("/api/admin/me", (req, res) => {
-    const secret = process.env.ADMIN_JWT_SECRET;
-    if (!secret) return res.json({ isAdmin: false });
-    const cookies = cookie.parse(req.headers.cookie || "");
-    const token = cookies.hnews_admin;
-    if (!token) return res.json({ isAdmin: false });
-    try {
-      jwt.verify(token, secret);
-      return res.json({ isAdmin: true });
-    } catch {
-      return res.json({ isAdmin: false });
-    }
-  });
-  app.post("/api/admin/logout", (_req, res) => {
-    res.setHeader(
-      "Set-Cookie",
-      cookie.serialize("hnews_admin", "", {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-        path: "/",
-        expires: /* @__PURE__ */ new Date(0)
-      })
-    );
-    return res.json({ ok: true });
-  });
   app.get("/api/animes", async (_req, res) => {
     try {
       const animes2 = await storage.getAllAnimes();
