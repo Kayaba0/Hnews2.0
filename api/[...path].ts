@@ -1,5 +1,5 @@
 import express from "express";
-import { registerRoutes } from "../server/routes.js";
+import { registerRoutes } from "../build/server/routes.js";
 
 const app = express();
 app.use(express.json({ limit: "50mb" }));
