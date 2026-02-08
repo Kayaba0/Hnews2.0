@@ -3,16 +3,13 @@
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
-  "engines": {
-  "node": "20.x"
-},
   "scripts": {
     "dev:client": "vite dev --port 5000",
     "dev": "tsx server/index.ts",
     "dev:api": "tsx server/local.ts",
-	"build:server": "tsup",
-	"postinstall": "npm run build:server",
-	"build": "vite build",
+    "build:server": "tsup",
+    "postinstall": "npm run build:server",
+    "build": "npm run build:server && vite build",
     "start": "NODE_ENV=production tsx server/index.ts",
     "check": "tsc",
     "db:push": "drizzle-kit push",
@@ -120,5 +117,8 @@
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8"
+  },
+  "engines": {
+    "node": "20.x"
   }
 }
