@@ -127,7 +127,7 @@ export function AnimeDetail({ anime, onClose, onQuickFilter, onEdit }: AnimeDeta
           <div className="space-y-3 pt-2">
   <div
     className="flex items-center gap-2 cursor-pointer group w-fit"
-    onClick={() => setIsDescriptionExpanded((v) => !v)}
+    onClick={() => setIsDescriptionExpanded(v => !v)}
   >
     <h3 className="text-sm font-bold flex items-center gap-2 text-primary/80 group-hover:text-primary transition-colors uppercase tracking-widest">
       <Layers className="size-4" />
@@ -169,6 +169,7 @@ export function AnimeDetail({ anime, onClose, onQuickFilter, onEdit }: AnimeDeta
     )}
   </AnimatePresence>
 </div>
+
 
       {/* Right Column: Main Content */}
       <div className="flex-1 flex flex-col min-w-0 bg-background/60 backdrop-blur-md h-full overflow-hidden relative">
