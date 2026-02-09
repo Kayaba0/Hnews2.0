@@ -125,35 +125,50 @@ export function AnimeDetail({ anime, onClose, onQuickFilter, onEdit }: AnimeDeta
           </div>
 
           <div className="space-y-3 pt-2">
-            <div 
-              className="flex items-center gap-2 cursor-pointer group w-fit"
-              onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-            >
-              <h3 className="text-sm font-bold flex items-center gap-2 text-primary/80 group-hover:text-primary transition-colors uppercase tracking-widest">
-                 <Layers className="size-4" />
-                 {language === 'it' ? 'Trama' : 'Plot'}
-              </h3>
-              <div className="p-1 text-primary group-hover:bg-white/5 transition-colors rounded-full">
-                {isDescriptionExpanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
-              </div>
-            </div>
-            <AnimatePresence>
-              {isDescriptionExpanded && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden"
-                >
-                  <p className="text-muted-foreground leading-relaxed text-sm font-light">
-                    {anime.description}
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
+  <div
+    className="flex items-center gap-2 cursor-pointer group w-fit"
+    onClick={() => setIsDescriptionExpanded((v) => !v)}
+  >
+    <h3 className="text-sm font-bold flex items-center gap-2 text-primary/80 group-hover:text-primary transition-colors uppercase tracking-widest">
+      <Layers className="size-4" />
+      {language === "it" ? "Trama" : "Plot"}
+    </h3>
+    <div className="p-1 text-primary group-hover:bg-white/5 transition-colors rounded-full">
+      {isDescriptionExpanded ? (
+        <ChevronUp className="size-4" />
+      ) : (
+        <ChevronDown className="size-4" />
+      )}
+    </div>
+  </div>
+
+  <AnimatePresence initial={false}>
+    {!isDescriptionExpanded ? (
+      <motion.div
+        key="collapsed"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        <p className="text-muted-foreground leading-relaxed text-sm font-light line-clamp-3">
+          {anime.description}
+        </p>
+      </motion.div>
+    ) : (
+      <motion.div
+        key="expanded"
+        initial={{ height: 0, opacity: 0 }}
+        animate={{ height: "auto", opacity: 1 }}
+        exit={{ height: 0, opacity: 0 }}
+        className="overflow-hidden"
+      >
+        <p className="text-muted-foreground leading-relaxed text-sm font-light">
+          {anime.description}
+        </p>
+      </motion.div>
+    )}
+  </AnimatePresence>
+</div>
 
       {/* Right Column: Main Content */}
       <div className="flex-1 flex flex-col min-w-0 bg-background/60 backdrop-blur-md h-full overflow-hidden relative">
