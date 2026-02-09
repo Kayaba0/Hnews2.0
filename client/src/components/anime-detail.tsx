@@ -134,40 +134,19 @@ export function AnimeDetail({ anime, onClose, onQuickFilter, onEdit }: AnimeDeta
       {language === "it" ? "Trama" : "Plot"}
     </h3>
     <div className="p-1 text-primary group-hover:bg-white/5 transition-colors rounded-full">
-      {isDescriptionExpanded ? (
-        <ChevronUp className="size-4" />
-      ) : (
-        <ChevronDown className="size-4" />
-      )}
+      {isDescriptionExpanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
     </div>
   </div>
 
-  <AnimatePresence initial={false}>
-    {!isDescriptionExpanded ? (
-      <motion.div
-        key="collapsed"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
-        <p className="text-muted-foreground leading-relaxed text-sm font-light line-clamp-3">
-          {anime.description}
-        </p>
-      </motion.div>
-    ) : (
-      <motion.div
-        key="expanded"
-        initial={{ height: 0, opacity: 0 }}
-        animate={{ height: "auto", opacity: 1 }}
-        exit={{ height: 0, opacity: 0 }}
-        className="overflow-hidden"
-      >
-        <p className="text-muted-foreground leading-relaxed text-sm font-light">
-          {anime.description}
-        </p>
-      </motion.div>
-    )}
-  </AnimatePresence>
+  {!isDescriptionExpanded ? (
+    <p className="text-muted-foreground leading-relaxed text-sm font-light line-clamp-3">
+      {anime.description}
+    </p>
+  ) : (
+    <p className="text-muted-foreground leading-relaxed text-sm font-light">
+      {anime.description}
+    </p>
+  )}
 </div>
 
 
